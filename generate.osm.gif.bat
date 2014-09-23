@@ -13,12 +13,12 @@
 @set height=1050
 @set zoom=15
 
-call %wget% -nc %osm_dump_url%/dump/UA/%initial_pbf%
+%wget% -nc %osm_dump_url%/dump/UA/%initial_pbf%
 if not exist %initial_pbf% goto :eof
-call %osmconvert% %initial_pbf% %boundary% --complex-ways -o=UA.osm
+%osmconvert% %initial_pbf% %boundary% --complex-ways -o=UA.osm
 @call :Maperitive %initial_pbf%
 
-call %wget% -q -r -nc -np -l 1 -A gz %osm_diff_url%
+%wget% -q -r -nc -np -l 1 -A gz %osm_diff_url%
 @set skip_current_osc=1
 @for /F "tokens=*" %%a in ('dir %osc_folder%\*.gz /O:N /b') do @(@call :processOsc %%a)
 
@@ -32,7 +32,7 @@ call %wget% -q -r -nc -np -l 1 -A gz %osm_diff_url%
 @set osc_file=%1
 @if %osc_file:~0,9% equ %initial_pbf:~0,9% set skip_current_osc=0
 @if %skip_current_osc% equ 1 @goto :eof
-call %osmconvert% UA.osm %osc_folder%\%1 %boundary% --complex-ways -o=UA_new.osm
+%osmconvert% UA.osm %osc_folder%\%1 %boundary% --complex-ways -o=UA_new.osm
 @del UA.osm
 @rename UA_new.osm UA.osm
 @call :Maperitive %1
@@ -42,7 +42,7 @@ call %osmconvert% UA.osm %osc_folder%\%1 %boundary% --complex-ways -o=UA_new.osm
 @echo use-ruleset alias=default > Maperitive.scr
 @echo load-source "%cd%\UA.osm" >> Maperitive.scr
 @echo export-bitmap width=%width% height=%height% zoom=%zoom% file=%cd%\png\%1.png >> Maperitive.scr
-call %maperitive% %cd%\Maperitive.scr
+%maperitive% %cd%\Maperitive.scr
 @del Maperitive.scr
 @del png\*.georef
 %imconvert% png\%1.png -gravity South -annotate 0 %1 png\%1.png

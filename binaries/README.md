@@ -1,8 +1,10 @@
-osm-pg-tests
-============
+osm-history-animation
+=====================
 
 Following folders and files expected in binaries-folder:
-  ImageMagick
-  Maperitive
-  osmconvert.exe
-  wget.exe
+<ul>
+  <li>ImageMagick</li>
+  <li>Maperitive</li>
+  <li>osmconvert.exe</li>
+  <li>wget.exe</li>
+</ul>

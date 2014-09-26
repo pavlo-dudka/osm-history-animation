@@ -8,7 +8,7 @@
 
 @del %png_folder%\*.png
 
-%wget% -nc http://be.gis-lab.info/data/osm_dump/%initial_pbf%
+%wget% -nc http://be.gis-lab.info/data/osm_dump/dump/%initial_pbf%
 @if not exist %initial_pbf% @echo %initial_pbf% not found
 @if not exist %initial_pbf% goto :eof
 %osmconvert% %initial_pbf% %boundary% -o=tmp.pbf

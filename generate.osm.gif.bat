@@ -37,7 +37,7 @@
 
 @call :Maperitive %1
 
-@if %osc_file% equ %stop_processing% set skip_pbf_update=1
+@if "%osc_file%" equ "%stop_processing%" set skip_pbf_update=1
 @goto :eof
 
 :Maperitive

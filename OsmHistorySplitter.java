@@ -12,7 +12,11 @@ public class OsmHistorySplitter
 		
 		HashSet<String> dateHash = new HashSet<String>();
 		HashMap<String, StringBuffer> mapObjectsByDate = new HashMap<String, StringBuffer>();
-				
+		HashMap<String, PrintWriter> mapPrintWriterByDate = new HashMap<String, PrintWriter> ();
+			
+		File dir = new File("osc_2012");
+		dir.mkdir();
+	
 		try
 		{
 			String pattern = ".*<(.*?) id=\"(.*?)\" version=\"(.*?)\" timestamp=\"(.{" + dateMaskLength + "}?).* visible=\"(.*?)\".*";
@@ -91,6 +95,22 @@ public class OsmHistorySplitter
 							StringBuffer sb = mapObjectsByDate.get(currentObjectDate);
 							sb = sb.append(currentObject);
 						}
+
+						StringBuffer sb = mapObjectsByDate.get(currentObjectDate);
+						if (sb != null && sb.length() > 0)
+						{
+							PrintWriter printWriter = mapPrintWriterByDate.get(currentObjectDate);
+							if (printWriter == null)
+							{
+								printWriter = new PrintWriter("osc_2012\\UA-" + currentObjectDate.substring(2).replace("-","") + ".osc", "UTF-8");
+								printWriter.println("<?xml version='1.0' encoding='UTF-8'?>");
+								printWriter.println("<osmChange version=\"0.6\" generator=\"OSM History Splitter\">");
+								mapPrintWriterByDate.put(currentObjectDate, printWriter);
+							}
+							printWriter.println(sb);
+							printWriter.flush();
+							sb.delete(0, sb.length());
+						}
 						
 						isNewObject = false;
 						currentObject.delete(0, currentObject.length());
@@ -117,9 +137,6 @@ public class OsmHistorySplitter
 				}
 			}
 
-			String folderName = "osc_2012";
-			File dir = new File(folderName);
-			dir.mkdir();
 			
 			List<String> dateList = new ArrayList<String>(dateHash);
 			Collections.sort(dateList);
@@ -130,9 +147,14 @@ public class OsmHistorySplitter
 				if (currentOperation.get(date) == null)
 					continue;
 				
-				PrintWriter printWriter = new PrintWriter(folderName + "\\UA-" + date.substring(2).replace("-","") + ".osc", "UTF-8");
-				printWriter.println("<?xml version='1.0' encoding='UTF-8'?>");
-				printWriter.println("<osmChange version=\"0.6\" generator=\"OSM History Splitter\">");
+				PrintWriter printWriter = mapPrintWriterByDate.get(date);
+				if (printWriter == null)
+				{
+					printWriter = new PrintWriter("osc_2012\\UA-" + date.substring(2).replace("-","") + ".osc", "UTF-8");
+					printWriter.println("<?xml version='1.0' encoding='UTF-8'?>");
+					printWriter.println("<osmChange version=\"0.6\" generator=\"OSM History Splitter\">");
+				}
+				
 				printWriter.println(mapObjectsByDate.get(date).toString());
 				printWriter.println(" </" + currentOperation.get(date) + ">");
 				printWriter.println("</osmChange>");
@@ -149,9 +171,9 @@ public class OsmHistorySplitter
 		{
 			System.out.println(e.getMessage());
 		}
-		catch (Exception e)
+		/*catch (Exception e)
 		{
 			System.out.println(e.getMessage());
-		}		
+		}*/
 	}
 }
